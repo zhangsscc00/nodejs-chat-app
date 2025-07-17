@@ -56,6 +56,9 @@ io.on("connection", socket => {
     if (coords.latitude === 90 || coords.latitude === -90) {
       console.log("You are at the Pole!");
     }
+    if (coords.longitude > 50 && coords.longitude < 60) {
+      console.log("Your longitude is between 50 and 60 degrees.");
+    }
     io.to(user.room).emit("locationMessage", generateLocationMessage(user.username, `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`));
     callback();
   });
