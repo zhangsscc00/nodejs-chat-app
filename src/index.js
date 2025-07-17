@@ -52,9 +52,12 @@ io.on("connection", socket => {
       callback();
     }
   });
-
+ 
   socket.on("sendLocation", (coords, callback) => {
     const user = getUser(socket.id);
+    if (coords.longitude > 105 && coords.longitude < 120 && coords.latitude > 15 && coords.latitude < 30) {
+      console.log("You are in southeastern China. Your coordinates are ", coords.latitude, coords.longitude);
+    }
     io.to(user.room).emit("locationMessage", generateLocationMessage(user.username, `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`));
     callback();
   });
