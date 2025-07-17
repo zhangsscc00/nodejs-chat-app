@@ -3,6 +3,7 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
+// 使用官方bad-words包
 const Filter = require("bad-words");
 const { generateMessage, generateLocationMessage } = require("./utils/messages");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users");
@@ -12,6 +13,15 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 require("dotenv").config();
+
+// 初始化bad-words过滤器
+const filter = new Filter();
+
+// 可以添加自定义禁词
+filter.addWords('垃圾', '傻逼', '白痴', '混蛋', '操', '草', '妈的', '他妈的', '狗屎', '婊子', '贱人');
+
+// 可以移除某些词（如果不想过滤的话）
+// filter.removeWords('hells', 'sadist');
 
 const port = process.env.PORT || 3000;
 const publicDirectoryPath = path.join(__dirname, "../public");
@@ -43,14 +53,19 @@ io.on("connection", socket => {
 
   socket.on("sendMessage", (message, callback) => {
     const user = getUser(socket.id);
-    const filter = new Filter();
-
+    
+    // 使用bad-words过滤器检查消息
     if (filter.isProfane(message)) {
-      return callback("Profanity is not allowed!");
-    } else {
-      io.to(user.room).emit("message", generateMessage(user.username, message));
-      callback();
+      // 记录违规行为
+      console.log(`Message blocked for user ${user.username} in room ${user.room}: "${message}"`);
+      
+      // 返回错误消息，阻止发送
+      return callback("Profanity is not allowed! Your message has been blocked.");
     }
+    
+    // 消息通过过滤器检查，正常发送
+    io.to(user.room).emit("message", generateMessage(user.username, message));
+    callback();
   });
  
   socket.on("sendLocation", (coords, callback) => {
