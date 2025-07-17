@@ -1,6 +1,4 @@
-# Node.js Chat App with Advanced Word Filtering
-=======
-# adding another word filter(like profanity) but customize it
+
 # Node.js Chat App
 A real-time chat application built with Node.js, Express, and Socket.io, featuring an advanced customizable word filtering system.
 
