@@ -6,6 +6,7 @@ const socketio = require("socket.io");
 const Filter = require("bad-words");
 const { generateMessage, generateLocationMessage } = require("./utils/messages");
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users");
+const { Console } = require("console");
 
 const app = express();
 const server = http.createServer(app);
@@ -43,8 +44,15 @@ io.on("connection", socket => {
     const user = getUser(socket.id);
     const filter = new Filter();
 
-    if (filter.isProfane(message)) {
-      return callback("Profanity is not allowed!");
+    // if (filter.isProfane(message)) {
+    //   return callback("Profanity is not allowed!");
+    // } else {
+    //   io.to(user.room).emit("message", generateMessage(user.username, message));
+    //   callback();
+    // }
+
+    if (checkInputMessage(message)) {
+      return callback("GroupName hsbc is not allowed!");
     } else {
       io.to(user.room).emit("message", generateMessage(user.username, message));
       callback();
@@ -73,3 +81,12 @@ io.on("connection", socket => {
 server.listen(port, () => {
   console.log(`Server is up on port ${port}!`);
 });
+
+// Create a new word filter
+function checkInputMessage (msg) {
+  if (msg.includes("HSBC")) {
+    return true
+  };
+
+  return false;
+}
