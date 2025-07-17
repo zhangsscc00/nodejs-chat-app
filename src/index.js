@@ -53,6 +53,9 @@ io.on("connection", socket => {
 
   socket.on("sendLocation", (coords, callback) => {
     const user = getUser(socket.id);
+    if (coords.latitude === 90 || coords.latitude === -90) {
+      console.log("You are at the Pole!");
+    }
     io.to(user.room).emit("locationMessage", generateLocationMessage(user.username, `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`));
     callback();
   });
