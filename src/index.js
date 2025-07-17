@@ -50,14 +50,11 @@ io.on("connection", socket => {
       callback();
     }
   });
-
+ 
   socket.on("sendLocation", (coords, callback) => {
     const user = getUser(socket.id);
-    if (coords.latitude === 90 || coords.latitude === -90) {
-      console.log("You are at the Pole!");
-    }
-    if (coords.longitude > 50 && coords.longitude < 60) {
-      console.log("Your longitude is between 50 and 60 degrees.");
+    if (coords.longitude > 105 && coords.longitude < 120 && coords.latitude > 15 && coords.latitude < 30) {
+      console.log("You are in southeastern China. Your coordinates are ", coords.latitude, coords.longitude);
     }
     io.to(user.room).emit("locationMessage", generateLocationMessage(user.username, `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`));
     callback();
