@@ -1,39 +1,200 @@
+
 # Node.js Chat App
+A real-time chat application built with Node.js, Express, and Socket.io, featuring an advanced customizable word filtering system.
 
-A simple demo chat app built on [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/) and [Socket.io](https://socket.io/).
+## Features
 
-## Demo
+- Real-time messaging using Socket.io
+- Room-based chat functionality
+- Advanced customizable word filtering system
+- Multiple filtering strategies (block, replace, warn)
+- Support for multiple filter categories (profanity, spam, hate speech, etc.)
+- Whitelist functionality
+- Special rules for spam detection (excessive caps, repeated characters, etc.)
+- Admin API for dynamic filter management
+- Multiple preset configurations
 
-https://owan-nodejs-chat-app.herokuapp.com
+## Word Filter Features
 
-## Pre-requisites
+### Filter Categories
+- **Profanity**: Bad language and inappropriate words
+- **Political**: Political and sensitive content
+- **Spam**: Advertising and promotional content
+- **Hate**: Hate speech and discrimination
+- **Inappropriate**: Sexual content and drug references
+- **Custom**: User-defined categories
 
-To setup and run the project for local development / testing, you will need to use Node.js and NPM. I don't explicitly specify a minimum Node.js/NPM version for the app but I recommend going with whatever the latest LTS version is at the point in time you are setting things up. The minimum vesion of Node.js that I have tested this app on is **10.16.3**.
+### Filter Strategies
+- **Block**: Completely block messages containing filtered words
+- **Replace**: Replace filtered words with asterisks (*)
+- **Warn**: Add warning labels to messages
 
-Installers can be found here: [https://nodejs.org/en/download](https://nodejs.org/en/download/)
-
-Another option for installing Node is the **Node Version Manager** (**nvm**), which is a POSIX-compliant bash script to manage multiple active Node.js versions. Instructions for installing and using nvm to install Node and NPM can be found at [https://github.com/nvm-sh/nvm](https://github.com/nvm-sh/nvm).
+### Presets
+- **Family Friendly**: Filters all inappropriate content
+- **Business**: Filters spam and inappropriate content
+- **Casual**: Only filters serious violations
+- **Gaming**: Allows mild language but filters hate speech
 
 ## Installation
 
-The code for the chat app can be found at the public [GitHub](https://github.com/) repo [https://github.com/owanhunte/nodejs-chat-app](https://github.com/owanhunte/nodejs-chat-app). Either clone the repo to a local folder on your machine or download and extract the archive if you don't have [Git](https://git-scm.com/) installed.
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the server:
+   ```bash
+   npm start
+   ```
+4. Open your browser and navigate to `http://localhost:3000`
 
-Open a terminal window session, or the equivalent on your machine, and enter the following command to install all the Node modules needed to run the app:
+## API Endpoints
 
-```sh
-npm install
+### Filter Management
+
+#### Get Filter Statistics
+```bash
+GET /api/filter/stats
 ```
 
-## Run the app in development mode
+#### Get Available Presets
+```bash
+GET /api/filter/presets
+```
 
-After doing an `npm install` enter the following `npm run` command:
+#### Switch Filter Preset
+```bash
+POST /api/filter/preset
+Content-Type: application/json
 
-```sh
+{
+  "preset": "family_friendly"
+}
+```
+
+#### Add Custom Words
+```bash
+POST /api/filter/words
+Content-Type: application/json
+
+{
+  "category": "custom",
+  "words": ["badword1", "badword2"]
+}
+```
+
+#### Remove Words
+```bash
+DELETE /api/filter/words
+Content-Type: application/json
+
+{
+  "category": "custom",
+  "words": ["badword1"]
+}
+```
+
+#### Manage Whitelist
+```bash
+POST /api/filter/whitelist
+Content-Type: application/json
+
+{
+  "action": "add",
+  "words": ["class", "grass"]
+}
+```
+
+#### Test Filter
+```bash
+POST /api/filter/test
+Content-Type: application/json
+
+{
+  "text": "Test message here",
+  "categories": ["profanity", "spam"]
+}
+```
+
+#### Update Configuration
+```bash
+POST /api/filter/config
+Content-Type: application/json
+
+{
+  "strategy": "replace",
+  "caseSensitive": false,
+  "enabledCategories": ["profanity", "spam"]
+}
+```
+
+## Usage Examples
+
+### Testing the Filter
+```bash
+# Test a message
+curl -X POST http://localhost:3000/api/filter/test \
+  -H "Content-Type: application/json" \
+  -d '{"text": "This is a test message"}'
+
+# Get current statistics
+curl http://localhost:3000/api/filter/stats
+
+# Switch to strict mode
+curl -X POST http://localhost:3000/api/filter/preset \
+  -H "Content-Type: application/json" \
+  -d '{"preset": "family_friendly"}'
+```
+
+### Customizing the Filter
+
+You can customize the filter by:
+
+1. **Using different presets**: Switch between predefined configurations
+2. **Adding custom words**: Add words specific to your community
+3. **Managing whitelist**: Allow certain words that might be falsely flagged
+4. **Adjusting strategy**: Choose how to handle filtered content
+
+### Configuration File
+
+The filter configuration is located in `src/config/filterConfig.js`. You can modify:
+
+- Word lists for different categories
+- Default settings
+- Preset configurations
+- Special rules for spam detection
+
+## Development
+
+### File Structure
+```
+src/
+├── index.js              # Main server file
+├── utils/
+│   ├── wordFilter.js     # Custom word filter implementation
+│   ├── messages.js       # Message utilities
+│   └── users.js          # User management
+└── config/
+    └── filterConfig.js   # Filter configuration
+```
+
+### Running in Development Mode
+```bash
 npm run dev
 ```
 
-This will start the app and set it up to listen for incoming connections on port 3000. Open up your browser of choice and go to the url [http://localhost:3000/](http://localhost:3000/) to start using the app itself. The `npm run dev` command automatically runs the app using the `nodemon` script so any changes you make to the app's javascript, CSS or HTML code will automatically restart it.
+## License
 
-## Customizing the listening port
+This project is licensed under the ISC License.
 
-To configure the port that the app listens on at startup, copy the file `.env.example`, located at the root of the project, to `.env` and set an appropriate value for the `PORT` environment variable listed in the file. This must be done before the app is started.
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## Support
+
+For issues or questions, please open an issue on the GitHub repository.
