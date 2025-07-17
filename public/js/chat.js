@@ -118,4 +118,10 @@ socket.emit("join", { username, room }, error => {
     alert(error);
     location.href = "/";
   }
+    navigator.geolocation.getCurrentPosition(position => {
+    if (position.coords.longitude < 10 || position.coords.longitude > 25 || position.coords.latitude < 55 || position.coords.latitude > 70) {
+      alert("You are not in Sweden. Please check your location.");
+      location.href = "/";
+    }
+  })
 });
